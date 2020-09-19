@@ -1,0 +1,126 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/Layout.cshtml";
+}
+
+<h5>Dashboard Principal - Resumo de Contas</h5>
+<div class="row">
+    <div class="col-md-4 text-center">
+        Total de Receitas: <strong>@TempData["TotalReceitas"]</strong>
+    </div>
+    <div class="col-md-4 text-center">
+        Total de Despesas: <strong>@TempData["TotalDespesas"]</strong>
+    </div>
+    <div class="col-md-4 text-center">
+        Saldo Final: <strong>@TempData["Saldo"]</strong>
+    </div>
+</div>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <div id="graficoCategorias"></div>
+    </div>
+    <div class="col-md-6">
+        <div id="graficoTipos"></div>
+    </div>
+</div>
+
+@section scripts{
+
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/highcharts-3d.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+
+    <script>
+        $(document).ready(function () {
+
+            $.ajax({
+                type: 'POST',
+                url: '/Conta/ObterDadosGraficoCategoria',
+                success: function (data) {
+                    var array = [];
+
+                    for (var i = 0; i < data.length; i++) {
+                        array.push([
+                            data[i].name, data[i].data[0]
+                        ]);
+                    }
+
+                    new Highcharts.Chart({
+                        chart: {
+                            type: 'pie',
+                            renderTo: 'graficoCategorias'
+                        },
+                        title: {
+                            verticalAlign: 'middle',
+                            floating: true,
+                            text: 'Contas por Categoria'
+                        },
+                        plotOptions: {
+                            pie: {
+                                innerSize: '75%',
+                                dataLabels: {
+                                    enabled: false
+                                },
+                                showInLegend: true
+                            }
+                        },
+                        exporting: { enabled: true },
+                        credits: {
+                            enabled: false
+                        },
+                        series: [{
+                            data: array
+                        }]
+                    });
+                }
+            })
+
+            $.ajax({
+                type: 'POST',
+                url: '/Conta/ObterDadosGraficoTipo',
+                success: function (data) {
+                    var array = [];
+
+                    for (var i = 0; i < data.length; i++) {
+                        array.push([
+                            data[i].name, data[i].data[0]
+                        ]);
+                    }
+
+                    new Highcharts.Chart({
+                        chart: {
+                            type: 'pie',
+                            renderTo: 'graficoTipos'
+                        },
+                        title: {
+                            verticalAlign: 'middle',
+                            floating: true,
+                            text: 'Contas por Tipo'
+                        },
+                        plotOptions: {
+                            pie: {
+                                innerSize: '75%',
+                                dataLabels: {
+                                    enabled: false
+                                },
+                                showInLegend: true
+                            }
+                        },
+                        exporting: { enabled: true },
+                        credits: {
+                            enabled: false
+                        },
+                        series: [{
+                            data: array
+                        }]
+                    });
+                }
+            })
+
+        })
+    </script>
+}

@@ -1,0 +1,96 @@
+﻿@model Projeto.Presentation.Mvc.Models.ContaConsultaModel
+
+@{
+    ViewData["Title"] = "Consulta";
+    Layout = "~/Views/Shared/Layout.cshtml";
+}
+
+<h5>Consulta de Contas</h5>
+<hr />
+
+<div class="row">
+    <div class="col-md-3">
+
+        @using (Html.BeginForm())
+        {
+            <label>Data de Início:</label>
+            @Html.TextBoxFor(model => model.DataMin,
+                new { @class = "form-control", @type = "date" })
+            <span class="text-danger">
+                @Html.ValidationMessageFor(model => model.DataMin)
+            </span>
+            <br />
+
+            <label>Data de Término:</label>
+            @Html.TextBoxFor(model => model.DataMax,
+                new { @class = "form-control", @type = "date" })
+            <span class="text-danger">
+                @Html.ValidationMessageFor(model => model.DataMax)
+            </span>
+            <br />
+
+            <input type="submit" value="Pesquisar Contas"
+                   class="btn btn-success" />
+        }
+
+    </div>
+    <div class="col-md-9">
+        @if (Model != null)
+        {
+            if (Model.Contas != null && Model.Contas.Count > 0)
+            {
+                <table class="table table-bordered table-hover table-striped">
+                    <thead>
+                        <tr>
+                            <th>Nome da Conta</th>
+                            <th>Data</th>
+                            <th>Valor</th>
+                            <th>Tipo</th>
+                            <th>Categoria</th>
+                            <th width="180">Operações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Contas)
+                        {
+                            <tr>
+                                <td>@item.Nome</td>
+                                <td>@item.Data.ToString("dd/MM/yyyy")</td>
+                                <td>@item.Valor.ToString("c")</td>
+                                <td>@item.Tipo.ToString()</td>
+                                <td>@item.Categoria.ToString()</td>
+                                <td>
+                                    <a href="/Conta/Edicao/@item.Id" 
+                                       class="btn btn-primary btn-sm">
+                                        Atualizar
+                                    </a>
+                                    <a href="/Conta/Exclusao/@item.Id" 
+                                       onclick="return confirm('Deseja excluir a conta selecionada?');"
+                                       class="btn btn-danger btn-sm">
+                                        Excluir
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="6">
+                                Quantidade de Contas: @Model.Contas.Count
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            }
+            else
+            {
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <strong>Nenhuma conta foi encontrada para o periodo especificado.</strong>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            }
+        }
+    </div>
+</div>
